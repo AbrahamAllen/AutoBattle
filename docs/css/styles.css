@@ -1,0 +1,330 @@
+#cssTest{
+	background-color: blue;
+	width: 500px;
+	height: 500px;
+}
+
+#screen{
+	width: 400px;
+	height: 700px;
+	padding: 0px;
+	margin: 0px;
+	
+	border-style: solid;
+	
+}
+
+#fightbg{
+	width: 400px;
+	height: 400px;
+	
+	background-image: url('fightBg.png');
+}
+
+.hero{
+	position: absolute;
+	left: 40px;
+	top: 240px;
+	
+	width: 100px;
+	height: 200px;
+	background-image: url("hero.png");
+}
+
+.enemy{
+	position: absolute;
+	left: 220px;
+	top: 40px;
+	
+	width: 150px;
+	height: 150px;
+}
+
+
+
+
+.tower{
+	width: 100px;
+	height: 250px;
+	background-image: url('tower.png');
+	float: left;
+	margin: 10px;
+	
+	font-size: 50px;
+}
+
+
+#bag{
+	width: 400px;
+	height: 300px;
+	
+	background-color: brown;
+	
+}
+
+#herohealthbar{
+	width: 100px;
+	height: 10px;
+	border-radius: 4px;
+	background-color: red;
+}
+
+#enemyhealthbar{
+	width: 150px;
+	height: 10px;
+	border-radius: 4px;
+	background-color: red;
+}
+
+.hptrack{
+	float: left;
+	background-color: green;
+	height: 10px;
+	border-radius: 4px;
+}
+
+#baseMenu{
+	position: absolute;
+	top: 400px;
+	width: 400px;
+	height: 300px;
+	margin: 0px;
+	
+	background-image: url('menuBg.png');
+	
+}
+
+
+#openBag{
+	width: 150px;
+	height: 150px;
+	float: left;
+	background-image: url('openBag.png');
+	
+}
+
+#openStats{
+	width: 150px;
+	height: 150px;
+	float: left;
+	background-image: url('openStats.png');
+}
+
+#openBagM{
+	width: 250px;
+	height: 150px;
+	background-image: url('openBagM.png');
+	
+	position: absolute;
+	top: 300px;
+	left: 50px;
+	
+}
+
+
+#openStatsM{
+	width: 250px;
+	height: 150px;
+	background-image: url('openStatsM.png');
+	
+	position: absolute;
+	top: 500px;
+	left: 50px;
+}
+
+
+#nextFloor{
+	position: absolute;
+	top: 650px;
+	left: 300px;
+	width: 100px;
+	height: 50px;
+	background-image: url('nextFloor.png');
+}
+
+#Back{
+	position: absolute;
+	top: 650px;
+	left: 300px;
+	width: 100px;
+	height: 50px;
+	background-image: url('back.png');
+}
+
+#leaveTower{
+	float: left;
+	width: 150px;
+	height: 150px;
+	background-image: url('leaveTower.png');
+}
+
+.gear{
+	width: 50px;
+	height: 50px;
+	float: left;
+	
+	background-size: cover;
+}
+
+	
+	
+#charmenu{
+	
+	width: 400px;
+	height: 400px;
+	
+	background-image: url('charmenu.png');
+}
+
+#helm{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 50px;
+	left: 180px;
+
+	
+}
+
+#armor{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 172px;
+	left: 207px;
+	
+}
+
+#legs{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 275px;
+	left: 180px;
+	
+}
+
+#onhand{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 175px;
+	left: 25px;
+	
+	
+}
+
+#offhand{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 260px;
+	left: 25px;
+	
+	
+}
+
+#ring1{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 30px;
+	left: 320px;
+	
+}
+
+#ring2{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 95px;
+	left: 320px;
+}
+
+#ring3{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 160px;
+	left: 320px;
+}
+
+#ring4{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 225px;
+	left: 320px;
+}
+
+#ring5{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 290px;
+	left: 320px;
+}
+
+#ring6{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 360px;
+	left: 320px;
+}
+
+
+#battleMenu{
+	position: absolute;
+	width: 400px;
+	height: 300px;
+	
+	top: 425px;
+
+	margin: 0px;
+}
+
+.attackOption{
+	width: 190px;
+	height: 140px;
+	
+	float: left; 
+	border-style: solid;
+	margin: 0px;
+}
+
+#fast{
+	background-image: url('fastAttack.png');
+}
+
+#slow{
+	background-image: url('slowAttack.png');
+}
+
+#agressive{
+	background-image: url('agressive.png');
+}
+
+#defensive{
+	background-image: url('defensive.png');
+}
+
+#statMenu{
+	position: absolute;
+	width: 400px;
+	height: 425px;
+	
+}
+
+.stat{
+	float: left;
+	margin: 25px;
+	
+	width: 150px;
+	height: 75px;
+	
+	text-align: center;
+	line-height: 25px;
+	
+	background-image: url('stat.png');
+}
