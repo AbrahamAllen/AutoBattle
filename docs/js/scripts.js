@@ -44,7 +44,7 @@ class User{
 		
 		this.activeTower;
 		this.activeFloor;
-		this.floorTrack =1;
+		this.floorTrack=1;
 		this.chest = false;
 	}
 	
@@ -103,7 +103,7 @@ class User{
 	
 	//spawns hero, reactivates chest and creates buttons for attack options
 	battleMenu(){
-		this.hero.spawn();
+		
 		let main = new menu(screen, 'battleMenu');
 		
 		this.chest = true;
@@ -111,6 +111,7 @@ class User{
 		new menu(main.dom, 'agressive', 'attackOption', function(){u.hero.changeStance(this.id)});
 		new menu(main.dom, 'defensive', 'attackOption', function(){u.hero.changeStance(this.id)});
 		new menu(main.dom, 'normal', 'attackOption', function(){u.hero.changeStance(this.id)});
+		this.hero.spawn();
 	}
 	
 	//creates menus for bag, stats leaving tower, continuing tower, chest
@@ -131,6 +132,7 @@ class User{
 		this.activeTower = false;
 		this.activeFloor = false;
 		this.floorTrack = 1;
+
 		alert('tower clear');
 		
 		this.mainmenu();
@@ -141,7 +143,7 @@ class User{
 		this.activeFloor.shift();
 		this.hero.gainExp(enemy);
 		this.hero.heal(Math.floor(this.hero.stm/5));
-		if(this.hero.luck+enemy.luck > Math.random()*100){u.bag.add(new enemy.loot())}
+		if(this.hero.luck+enemy.luck > Math.random()*100){u.bag.add(new enemy.loot(getRandom(BaseStats),enemy.rank))}
 		else{};
 		setTimeout(function(){u.continueFloor()}, 1200);
 	}
@@ -345,6 +347,7 @@ class Hero extends Character{
 		this.dom = new menu(screen, 'hero', 'hero');
 		this.dom = this.dom.dom;
 		this.healthbar = new HealthBar(this.maxhp, this.hp, this.dom);
+		this.changeStance('normal');
 	}
 	
 	//animates attack
@@ -362,7 +365,7 @@ class Hero extends Character{
 		if(this.stance == stance){this.stance = 'normal'}else{this.stance = stance};
 		switch(this.stance){			 
 			case 'fast': this.atkSpd = 3000-(this.agl*50); this.atk = Math.ceil(this.gatk+this.lvl);break;
-			case 'agressive': this.atkSpd = 5000-(this.agl*30);this.atk = Math.ceil((this.gatk*2)+(this.str)+(this.dex));break;
+			case 'agressive': this.atkSpd = 6000-(this.agl*30);this.atk = Math.ceil((this.gatk*2)+(this.str)+(this.dex));break;
 			case 'defensive': this.atkSpd = 4000-(this.agl*10);this.atk = Math.ceil((this.str)+(this.dex/2));break;
 			case 'normal': this.atkSpd = 4000-(this.agl*20);this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));break;
 		}
@@ -520,7 +523,7 @@ class Pygmybat extends Enemy{
 		this.setStats();
 		this.hp = this.maxhp;
 		
-		this.loot = Batfang;
+		this.loot = Drop;
 	}
 	
 }
@@ -531,12 +534,12 @@ class Greybat extends Enemy{
 		this.rank = 1;
 		this.img = "url('css/assets/greyBat.png')";
 		
-		this.str = 2*lvl;
-		this.dex = 2*lvl;
-		this.tof = 2*lvl;
-		this.agl = 2*lvl;
-		this.stm = 2*lvl;
-		this.loot = Batfang;
+		this.str = 3*lvl;
+		this.dex = 3*lvl;
+		this.tof = 3*lvl;
+		this.agl = 3*lvl;
+		this.stm = 3*lvl;
+		this.loot = Drop;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -552,12 +555,12 @@ class Blackbat extends Enemy{
 		this.img = "url('css/assets/blackBat.png')";
 		
 		
-		this.str = 3*lvl;
-		this.dex = 1*lvl;
+		this.str = 5*lvl;
+		this.dex = 2*lvl;
 		this.tof = 3*lvl;
 		this.agl = 2*lvl;
 		this.stm = 2*lvl;
-		this.loot = Batfang;
+		this.loot = Drop;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -574,10 +577,11 @@ class Brownbat extends Enemy{
 	
 		this.str = lvl;
 		this.dex = 3*lvl;
-		this.tof = 4*lvl;
+		this.tof = 6*lvl;
 		this.agl = lvl;
 		this.stm = 3*lvl;
-		this.loot = Batfang;
+		this.tec = Math.floor(lvl/2);
+		this.loot = Drop;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -592,12 +596,12 @@ class Largebat extends Enemy{
 		this.rank = 2;
 		this.img = "url('css/assets/largeBat.png')";
 		
-		this.str = 3*lvl;
-		this.dex = 2*lvl;
-		this.tof = 4*lvl;
+		this.str = 5*lvl;
+		this.dex = 3*lvl;
+		this.tof = 5*lvl;
 		this.agl = 2*lvl;
 		this.stm = 5*lvl;
-		this.loot = Batfang;
+		this.loot = Drop;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -612,11 +616,11 @@ class Sonicbat extends Enemy{
 		this.img = "url('css/assets/sonicBat.png')";
 		
 		this.str = 2*lvl;
-		this.dex = 5*lvl;
+		this.dex = 7*lvl;
 		this.tof = 3*lvl;
-		this.agl = 3*lvl;
+		this.agl = 4*lvl;
 		this.stm = 3*lvl;
-		this.loot = Batfang;
+		this.loot = Drop;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -637,7 +641,7 @@ class Vampirebat extends Enemy{
 		this.tof = 3*lvl;
 		this.agl = 5*lvl;
 		this.stm = 4*lvl;
-		this.loot = Batfang;
+		this.loot = Drop;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -704,7 +708,11 @@ class Bag{
 		domclear(screen);
 		
 		let main = new menu(screen, 'inspectMenu');
-		new menu(main.dom, 'inspectGear');
+		new menu(main.dom, 'inspectGear', '', function(){
+			let div = document.getElementById('inspectGear');
+			if(div.childNodes[0]){document.getElementById('bag').appendChild(div.childNodes[0]); domclear(document.getElementById('attachmentMenu'))};
+			u.bag.inspecting = undefined;
+		});
 		new menu(main.dom, 'gearStats');
 		new menu(main.dom, 'attachmentMenu');
 		new menu(screen, 'bag');
@@ -761,7 +769,7 @@ class Bag{
 					document.getElementById(item.id).style.marginTop = '50px';
 					this.material = item;
 					document.getElementById('attachmentMenu').remove();
-					new menu(document.getElementById('inspectMenu'), 'forge', '', function(){u.bag.upgradeItem()});
+					new menu(document.getElementById('inspectMenu'), 'forge', '', function(){u.bag.upgrade()});
 					
 					return true;
 				}
@@ -770,6 +778,12 @@ class Bag{
 		}catch{
 			return false;
 		}
+	}
+	
+	
+	upgrade(){
+		try{this.upgradeItem()}
+		catch{this.upgradeDrop()}
 	}
 	
 	upgradeItem(){
@@ -784,12 +798,22 @@ class Bag{
 		}
 	}
 	
+	upgradeDrop(){
+		if(this.inspecting && this.material){
+			this.add(new Drop(this.inspecting.stat, this.inspecting.rank, this.inspecting.stage+1));
+			this.inspecting.destroy(); this.inspecting = undefined;
+			this.material.destroy(); this.material = undefined;
+			this.forge();
+		}
+	}
+	
 	cancelForge(){
 		document.getElementById(this.material.id).style.marginTop = '0px';
 		document.getElementById('bag').appendChild(document.getElementById(this.material.id));
 		this.material = undefined; 
-		document.getElementById('forge').remove();
 		new menu(document.getElementById('inspectMenu'), 'attachmentMenu');
+		document.getElementById('forge').remove();
+		
 	}
 }
 
@@ -832,9 +856,10 @@ class Gear{
 	
 	//adds gear or drop to inspection menu and opens gear slot menu
 	inspect(){
+		console.log(u.bag.inspecting);
 		if(this.equipted){this.unequipt()};
 		if(u.bag.merge(this)){return};
-		if(u.bag.material){u.bag.cancelForge()}
+		if(u.bag.material){alert(); u.bag.cancelForge()}
 		let div = document.getElementById('inspectGear');
 		if(div.childNodes[0]){document.getElementById('bag').appendChild(div.childNodes[0]); domclear(document.getElementById('attachmentMenu'))};
 		div.appendChild(document.getElementById(this.id));
@@ -1049,35 +1074,46 @@ let BaseStats = ['str', 'dex', 'tof', 'stm', 'tec', 'agl'];
 
 //base class for all enemy drops, includes attach and unattach functions and dom handling for drop attachments to gear
 class Drop{
-	constructor(){
+	constructor(stat, rank, stage = 1){
 		this.id = 'drop'+Object.values(u.bag.drops).length.toString();
 		this.attached = undefined;
+		this.stage = stage;
+		this.rank = rank;
+		this.stat = stat;
+		this.bonus = (this.rank+this.stage)*2;
+		this.img = 'none';
 	}
 	
 	//dom controls gear and adds stat or removes stat from gear  
 	attach(){
-	if(u.bag.inspecting){	
-		let div = document.getElementById(this.id);
-		let gear = u.bag.inspecting;
-		
-		for(let i = 0; i < gear.slots; i++){
-			let slot = document.getElementById(gear.id+i);
-			if(slot.childNodes.length > 0){continue}
-			else{
-				slot.appendChild(div);
-				gear.stats[this.stat] += this.bonus;
-				gear.showStats();
-				gear.attachments.push(this);
-				this.attached = i;
-				div.oncontextmenu = function(){event.preventDefault(); u.bag.drops[this.id].detach()}
-				return;
+		if(u.bag.inspecting){
+			if(u.bag.merge(this)){return};
+			let div = document.getElementById(this.id);
+			let gear = u.bag.inspecting;
+			
+			for(let i = 0; i < gear.slots; i++){
+				let slot = document.getElementById(gear.id+i);
+				if(slot.childNodes.length > 0){continue}
+				else{
+					slot.appendChild(div);
+					gear.stats[this.stat] += this.bonus;
+					gear.showStats();
+					gear.attachments.push(this);
+					this.attached = i;
+					div.oncontextmenu = function(){event.preventDefault(); u.bag.drops[this.id].detach()}
+					return;
+				}
 			}
+		}else{
+			this.inspect();
 		}
-	}}
+	}
 	
 	detach(){
 		let gear = u.bag.inspecting;
 		let div = document.getElementById(this.id);
+		let drop = this;
+		div.onclick = function(){drop.attach()}
 		gear.stats[this.stat]-=this.bonus;
 		document.getElementById('bag').appendChild(div);
 		div.oncontextmenu = false;
@@ -1086,37 +1122,37 @@ class Drop{
 		this.attached = undefined;
 	}
 	
-}
-
-
-
-//BAT DROPS
-class Batfang extends Drop{
-	constructor(){
-		super();
-		this.stat = 'dex';
-		this.bonus = 2;
+	inspect(){
+		if(u.bag.merge(this)){return};
+		if(u.bag.material){u.bag.cancelForge()}
+		let div = document.getElementById('inspectGear');
+		if(div.childNodes[0]){document.getElementById('bag').appendChild(div.childNodes[0]); domclear(document.getElementById('attachmentMenu'))};
+		div.appendChild(document.getElementById(this.id));
+		u.bag.inspecting = this;
+		this.showStats();
+	}
+	
+	showStats(){
+		let stats = Object.keys(this);
+		let num = Object.values(this);
+		
+		let gearStats = document.getElementById('gearStats');
+		gearStats.innerHTML = '';
+		for(let i = 0; i < stats.length-1; i++){
+			if(stats[i] == 'stats' || stats[i] == 'attachments' || stats[i] == 'equipted'){continue};
+			gearStats.innerHTML+= stats[i]+' : '+num[i]+'<br>';
+		}
+	}
+	
+	destroy(){
+		document.getElementById(this.id).remove();
+		delete u.bag.drops[this.id];
 	}
 	
 }
 
-class Batclaw extends Drop{
-	constructor(){
-		super();
-		this.stat = 'str';
-		this.bonus = 2;
-	}
-	
-}
 
-class Batwing extends Drop{
-	constructor(){
-		super();
-		this.stat = 'agl';
-		this.bonus = 2;
-	}
-	
-}
+
 
 
 let u = new User();
@@ -1131,20 +1167,13 @@ u.bag.add(new Dagger(1), true);
 u.bag.add(new Shield(1), true); */
 
 u.bag.add(new Sword(2), true);
-u.bag.add(new Sword(2), true);
-u.bag.add(new Sword(2), true);
-u.bag.add(new Sword(2), true);
-u.bag.add(new Sword(2), true);
-u.bag.add(new Sword(2), true);
-u.bag.add(new Sword(2), true);
-u.bag.add(new Ring(3), true);
-u.bag.add(new Ring(3), true);
-u.bag.add(new Ring(3), true);
-u.bag.add(new Ring(3), true);
-u.bag.add(new Ring(3), true);
-u.bag.add(new Ring(3), true);
-u.bag.add(new Ring(3), true);
-u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(Math.ceil(Math.random()*4)), true);
+u.bag.add(new GearList[Math.round(Math.random()*7)](2), true);
+
+u.bag.add(new Drop('str', 1));
+u.bag.add(new Drop('str', 1));
+
+
 
 
 u.mainmenu();
