@@ -8,14 +8,14 @@ function domclear(div){
 	}
 }
 
-//default function to return random from listStyleType
+//default function to return random from list
 function getRandom(list){
 	let i = list.length;
 	i = Math.round(Math.random()*(i-1));
 	return list[i];
 }
 
-
+//menu class that: this.dom = getElementById: givven onclick
 class menu{
 	constructor(parent, id, className = 'menu', onclick = false, build = true){
 		this.dom = document.createElement('div');
@@ -67,7 +67,7 @@ class User{
 	}
 	
 	
-	//start tower creates a new tower and assigns the user an active tower and floor then builds battle menu and starts floor
+	//creates a new tower and assigns the user an active tower and floor then builds battle menu and starts floor
 	startTower(idTag){
 		domclear(screen);
 		this.activeTower = new Tower(idTag);
@@ -79,7 +79,7 @@ class User{
 		this.continueFloor();
 	}
 	
-	//checks if tower is complete and if not sets the active floor to the enxt floor of the active tower
+	//checks if tower is complete and if not sets the active floor to the next floor of the active tower
 	newFloor(){
 		domclear(screen);
 		this.floorTrack++;
@@ -101,7 +101,7 @@ class User{
 		}
 	}
 	
-	//spawns hero in and creates buttons for attack options
+	//spawns hero, reactivates chest and creates buttons for attack options
 	battleMenu(){
 		this.hero.spawn();
 		let main = new menu(screen, 'battleMenu');
@@ -110,9 +110,10 @@ class User{
 		new menu(main.dom, 'fast', 'attackOption', function(){u.hero.changeStance(this.id)});
 		new menu(main.dom, 'agressive', 'attackOption', function(){u.hero.changeStance(this.id)});
 		new menu(main.dom, 'defensive', 'attackOption', function(){u.hero.changeStance(this.id)});
+		new menu(main.dom, 'normal', 'attackOption', function(){u.hero.changeStance(this.id)});
 	}
 	
-	//creates menus for bag, stats and leaving tower options as well as continuing tower at next floor
+	//creates menus for bag, stats leaving tower, continuing tower, chest
 	floorMenu(){
 		domclear(screen);
 		let main = new menu(screen, 'floorMenu');
@@ -135,16 +136,20 @@ class User{
 		this.mainmenu();
 	}
 	
-	
+	//removes enemy from active floor, loots enemy and repeates continueFloor
 	kill(enemy){
 		this.activeFloor.shift();
+		this.hero.gainExp(enemy);
+		this.hero.heal(Math.floor(this.hero.stm/5));
 		if(this.hero.luck+enemy.luck > Math.random()*100){u.bag.add(new enemy.loot())}
+		else{};
 		setTimeout(function(){u.continueFloor()}, 1200);
 	}
 	
+	//adds gear to user bag
 	openChest(){
 		this.chest = false;
-		this.bag.add(new Helm(2), true);
+		this.bag.add(new GearList[Math.round(Math.random()*7)](this.activeTower.lvl+this.floorTrack), true);
 		document.getElementById('chest').remove();
 	}
 	
@@ -220,24 +225,26 @@ class Character{
 			if(target.hp > 0){unit.attack(target)};
 		}, speed);
 	}
-	
+	//takes damage based on enemy atk and enemy tec and this def
 	damage(enemy){
 		let total = enemy.atk;
 		total-= this.def;
 		if(this.stance == 'defensive'){total-=this.def};
 		if(total < 0){total = 0};
-		//total+=enemy.tec;
+		total+=enemy.tec;
 		this.hp-=total;
 		this.healthbar.update(this.hp);
 		if(this.hp <= 0){this.destroy()}
 	}
 	
+	//sets atk def and max hp stats 
 	setStats(){
 		this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));
-		this.def = Math.ceil((this.gdef)+(this.tof));
+		this.def = Math.ceil((this.gdef)+(this.tof)+(this.dex/2));
 		this.maxhp = Math.ceil((this.tof/2)+(this.stm/2)+(this.str/2)+(this.lvl*2));
 		
 	}
+	
 	
 	
 	
@@ -286,6 +293,8 @@ class Hero extends Character{
 	constructor(){
 		super();
 		
+		
+		//base stats that impact atk def max maxhp
 		this.str = 5;
 		this.dex = 5;
 		this.tof = 3;
@@ -294,20 +303,26 @@ class Hero extends Character{
 		this.tec = 1;
 		this.luck = 7;
 		
+		
+		//stats gained from gear 
 		this.gatk = 0;
 		this.gdef = 0;
 		
+		
+		//tracking exp lvl and upgrades
 		this.lvl = 1;
 		this.exp = 0;
 		this.statPoints = 5;
-
+		
+		//default value impacted by agl
 		this.atkSpd = 4000;
 		
+		//builds combat stats
 		this.setStats();
 		this.hp=this.maxhp;
-	
 		this.stance = 'normal';
 		
+		//gear dict 
 		this.gear = {};
 		this.gear['Helm'] = undefined;
 		this.gear['Armor'] = undefined;
@@ -315,6 +330,7 @@ class Hero extends Character{
 		this.gear['Onhand'] = undefined;
 		this.gear['Offhand'] = undefined;
 		
+		//ring dict
 		this.rings = {};
 		this.rings[0] = undefined;
 		this.rings[1] = undefined;
@@ -324,36 +340,32 @@ class Hero extends Character{
 		this.rings[5] = undefined;
 	}
 	
+	//builds dom of hero and healthbar
 	spawn(){
 		this.dom = new menu(screen, 'hero', 'hero');
 		this.dom = this.dom.dom;
 		this.healthbar = new HealthBar(this.maxhp, this.hp, this.dom);
 	}
 	
+	//animates attack
 	attackanim(){
-		let unit = this;
-		
+		let unit = this;		
 		setTimeout(function(){unit.dom.style.top = '200px'; unit.dom.style.left = '100px'; unit.dom.style.scale = '90%'},150);
 		setTimeout(function(){unit.dom.style.top = '100px'; unit.dom.style.left = '200px'; unit.dom.style.scale = '80%'},300);
 		setTimeout(function(){unit.dom.style.top = '200px'; unit.dom.style.left = '100px'; unit.dom.style.scale = '90%'},450);
 		setTimeout(function(){unit.dom.style.top = '240px'; unit.dom.style.left = '40px'; unit.dom.style.scale = '100%'},600);
-	
 	}
 	
 	//sets stance to the selected option and changes atkSpd and damage values depending on current stance
 	changeStance(stance){
 		if(this.stance != 'normal'){document.getElementById(this.stance).className = 'attackOption'};
 		if(this.stance == stance){this.stance = 'normal'}else{this.stance = stance};
-	
-		switch(this.stance){
-			 
+		switch(this.stance){			 
 			case 'fast': this.atkSpd = 3000-(this.agl*50); this.atk = Math.ceil(this.gatk+this.lvl);break;
 			case 'agressive': this.atkSpd = 5000-(this.agl*30);this.atk = Math.ceil((this.gatk*2)+(this.str)+(this.dex));break;
 			case 'defensive': this.atkSpd = 4000-(this.agl*10);this.atk = Math.ceil((this.str)+(this.dex/2));break;
 			case 'normal': this.atkSpd = 4000-(this.agl*20);this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));break;
-
 		}
-		
 		clearInterval(this.fight);
 		this.attack(u.activeFloor[0]);
 		document.getElementById(this.stance).classList.add('selectedAttack');
@@ -385,7 +397,7 @@ class Hero extends Character{
 	}
 	
 	
-	
+	//drops point and gains stat
 	usePoint(stat){
 	if(this.statPoints >0){
 		this.statPoints--;
@@ -393,6 +405,8 @@ class Hero extends Character{
 		this.statMenu();
 	}}
 	
+	
+	//gets stat string and upgrades stat by amt 
 	statUp(stat, amt){
 		switch(stat){
 			case 'str' : this.str += amt; break;
@@ -406,6 +420,7 @@ class Hero extends Character{
 		}
 	}
 	
+	//gets stat string and loses stat by amt
 	statDown(stat, amt){
 		switch(stat){
 			case 'str' : this.str -= amt; break;
@@ -419,15 +434,24 @@ class Hero extends Character{
 		}
 	}
 	
-	gainExp(amt){
-		this.exp+=amt;
+	//gets enemy and adds exp based on lvl and rank, levels up and adds stat points
+	gainExp(enemy){
+		this.exp+=(enemy.lvl*enemy.rank);
 		if(this.exp > this.lvl*15){
 			this.lvl++; 
 			this.exp = 0; 
 			this.statPoints+=5; 
 			this.statUp('str', 1); 
 			this.statUp('stm', 1); 
+			this.setStats();
 		}
+	}
+	
+	//heals by amt
+	heal(amt){
+		this.hp+=amt;
+		if(this.hp > this.maxhp){this.hp = this.maxhp};
+		this.healthbar.update(this.hp);
 	}
 	
 }
@@ -445,26 +469,28 @@ class Enemy extends Character{
 		
 		
 	}
+	
+	//builds enemy dom and healtbat
 	spawn(){
 		this.dom = new menu(screen, 'enemy', 'enemy');
 		this.dom = this.dom.dom;
 		this.dom.style.backgroundImage = this.img;
 		this.healthbar = new HealthBar(this.maxhp, this.hp, enemy);
-		
 		u.hero.attack(this);
 		this.attack(u.hero);
 		console.log(this);
 	}
 	
+	//animates attack
 	attackanim(){
 		let unit = this;
-		
 		setTimeout(function(){unit.dom.style.top = '80px'; unit.dom.style.left = '150px'; unit.dom.style.scale = '110%'},150);
 		setTimeout(function(){unit.dom.style.top = '100px'; unit.dom.style.left = '90px'; unit.dom.style.scale = '130%'},300);
 		setTimeout(function(){unit.dom.style.top = '80px'; unit.dom.style.left = '150px'; unit.dom.style.scale = '110%'},450);
 		setTimeout(function(){unit.dom.style.top = '40px'; unit.dom.style.left = '220px'; unit.dom.style.scale = '100%'},600);
 	}
 	
+	//animates death and sets user kill
 	destroy(){
 		let unit = this;
 		clearInterval(this.fight);
@@ -475,6 +501,7 @@ class Enemy extends Character{
 	
 }
 
+//BAT ENEMIES
 class Pygmybat extends Enemy{
 	constructor(lvl){
 		super(lvl);
@@ -517,8 +544,6 @@ class Greybat extends Enemy{
 	}
 	
 }
-
-
 
 class Blackbat extends Enemy{
 	constructor(lvl){
@@ -632,13 +657,16 @@ class Bag{
 		this.gear = {};
 		this.drops = {};
 		this.inspecting = false;
+		this.material = undefined;
 	}
+	
+	//adds gear and drop 
 	add(item, gear = false){
 		if(gear){this.gear[item.id] = item}
 		else{this.drops[item.id] = item}
 	}
 	
-	//opens full bag
+	//opens full bag 
 	open(){
 		domclear(screen);
 		new menu(screen, 'charMenu');
@@ -647,6 +675,7 @@ class Bag{
 		new menu(screen, 'bag');
 		this.populateGear();
 		
+		//makes gear
 		for(let slot of Object.keys(u.hero.gear)){
 			let div = new menu(document.getElementById('charMenu'), slot, 'equiptSlot');
 			if(u.hero.gear[slot]){
@@ -655,6 +684,7 @@ class Bag{
 			};
 		}
 		
+		//makes rings
 		for(let slot of Object.keys(u.hero.rings)){
 			let div = new menu(document.getElementById('ringSlots'), 'Ring'+slot, 'ringslot');
 			console.log(u.hero.rings[slot]);
@@ -669,6 +699,7 @@ class Bag{
 		new menu(screen, 'back', 'back', function(){if(u.activeTower){u.floorMenu()}else{u.mainmenu()}});
 	}
 	
+	//opens the forge: used for enchating inspecting and upgrading gear 
 	forge(){
 		domclear(screen);
 		
@@ -676,12 +707,8 @@ class Bag{
 		new menu(main.dom, 'inspectGear');
 		new menu(main.dom, 'gearStats');
 		new menu(main.dom, 'attachmentMenu');
-		
 		new menu(screen, 'bag');
-		
-	
 		new menu(screen, 'swap', 'swap', function(){u.bag.open()});
-		new menu(screen, 'drops', 'drops', function(){u.bag.populateDrops()});
 		new menu(screen, 'back', 'back', function(){if(u.activeTower){u.floorMenu()}else{u.mainmenu()}});
 		this.populateGearInspect();
 	}
@@ -698,6 +725,7 @@ class Bag{
 		}
 	}
 	
+	//generates drops and gear for forge  
 	populateGearInspect(){
 		domclear(document.getElementById('bag'));
 		for(let gear of Object.values(this.gear)){
@@ -707,11 +735,11 @@ class Bag{
 			item.dom.innerHTML = gear.lvl+':'+gear.rank;
 			item.build();
 		}
-		document.getElementById('drops').onclick = function(){u.bag.populateDrops()};
+		this.populateDrops();
 	}
 	
+	//generates drops
 	populateDrops(){
-		domclear(document.getElementById('bag'));
 		for(let drop of Object.values(this.drops)){
 		if(drop.attached == undefined){
 			let item = new menu(document.getElementById('bag'), drop.id, 'drop', function(){drop.attach()}, false);
@@ -719,7 +747,49 @@ class Bag{
 			item.dom.innerHTML = drop.stat+' : '+drop.bonus;
 			item.build();
 		}}
-		document.getElementById('drops').onclick = function(){u.bag.populateGearInspect()};
+	}
+	
+	
+	//checks compbatability of two items and allows them to merge 
+	merge(item){
+		console.log(item);
+		try{
+			if(this.inspecting){
+				if(this.inspecting.lvl == item.lvl && this.inspecting.rank == item.rank && this.inspecting.stage == item.stage && this.inspecting.stat == item.stat){
+				
+					document.getElementById('inspectGear').appendChild(document.getElementById(item.id));
+					document.getElementById(item.id).style.marginTop = '50px';
+					this.material = item;
+					document.getElementById('attachmentMenu').remove();
+					new menu(document.getElementById('inspectMenu'), 'forge', '', function(){u.bag.upgradeItem()});
+					
+					return true;
+				}
+				
+			}
+		}catch{
+			return false;
+		}
+	}
+	
+	upgradeItem(){
+		if(this.inspecting && this.material){
+			this.inspecting.clear(); this.material.clear();
+			delete this.gear[this.inspecting.id];
+			this.material.upgrade();
+			this.forge();
+			this.inspecting = false;
+			this.material.inspect();
+			this.material = false;
+		}
+	}
+	
+	cancelForge(){
+		document.getElementById(this.material.id).style.marginTop = '0px';
+		document.getElementById('bag').appendChild(document.getElementById(this.material.id));
+		this.material = undefined; 
+		document.getElementById('forge').remove();
+		new menu(document.getElementById('inspectMenu'), 'attachmentMenu');
 	}
 }
 
@@ -728,16 +798,16 @@ class Gear{
 	constructor(lvl){
 		this.lvl = lvl;
 		this.rank = Math.ceil(Math.random()*5);
+		this.stage = 1;
 		this.id = Object.keys(u.bag.gear).length.toString();
 		this.stats = {'str': 0, 'dex': 0, 'tof': 0, 'agl': 0, 'stm': 0, 'tec': 0};
 		this.attachments = [];
 		this.equipted = false;
 	}
 	
+	//full control of adding gear to hero and calling statUp and statDown
 	equipt(){
 		let slot = document.getElementById(this.type);
-		
-		
 		if(slot.childNodes[0]){u.bag.gear[slot.childNodes[0].id].unequipt()};
 		
 		document.getElementById(this.id).oncontextmenu = function(){event.preventDefault(); u.bag.gear[this.id].unequipt()};
@@ -745,7 +815,6 @@ class Gear{
 		u.hero.statUp('gdef', this.gdef);
 		u.hero.statUp('gatk', this.gatk);
 		u.hero.gear[this.type] = this;
-		
 		
 		for(let stat of Object.keys(this.stats)){if(this.stats[stat] > 0){u.hero.statUp(stat, this.stats[stat])}}
 		this.equipted = true;
@@ -761,10 +830,12 @@ class Gear{
 		this.equipted = false;
 	}
 	
+	//adds gear or drop to inspection menu and opens gear slot menu
 	inspect(){
 		if(this.equipted){this.unequipt()};
+		if(u.bag.merge(this)){return};
+		if(u.bag.material){u.bag.cancelForge()}
 		let div = document.getElementById('inspectGear');
-		
 		if(div.childNodes[0]){document.getElementById('bag').appendChild(div.childNodes[0]); domclear(document.getElementById('attachmentMenu'))};
 		div.appendChild(document.getElementById(this.id));
 		u.bag.inspecting = this;
@@ -777,6 +848,7 @@ class Gear{
 		this.showStats();
 	}
 	
+	//gives stats
 	showStats(){
 		let stats = Object.keys(this);
 		let num = Object.values(this);
@@ -790,11 +862,24 @@ class Gear{
 		for(let stat of Object.keys(this.stats)){
 			if(this.stats[stat] != 0){gearStats.innerHTML+= stat+' : '+this.stats[stat]+'<br>';}
 		}
-		
-		
+	}
+	
+	//adds stage and redoes bonuses
+	upgrade(){
+		this.stage++;
+		this.gdef=Math.floor(this.gdef+(this.gdef*.5))+1;
+		this.gatk=Math.floor(this.gatk+(this.gatk*.5))+1;
+	}
+	
+	clear(){
+		for(let attachment of this.attachments){
+			attachment.unattach();
+		}
 	}
 }
 
+
+//ALL GEAR
 class Helm extends Gear{
 	constructor(lvl){
 		super(lvl);
@@ -914,15 +999,15 @@ class Shield extends Gear{
 	}
 	
 }
-//customized equip and unequpt functions for rings
+//customized equip and unequpt upgrade functions for rings
 class Ring extends Gear{
 	constructor(lvl){
 		super(lvl);
 		
 		this.type = 'Ring';
 		
-		this.stat = 'str';
-		this.bonus = 5;
+		this.stat = getRandom(BaseStats);
+		this.bonus = Math.round((this.lvl/3)*this.rank);
 		
 		this.img = 'url("css/assets/ring.png")';
 	}
@@ -951,8 +1036,16 @@ class Ring extends Gear{
 		div.onclick = function(){u.bag.gear[this.id].equipt()}
 	}
 	
+	upgrade(){
+		this.stage++;
+		this.bonus = Math.floor(this.bonus+this.bonus/2);
+	}
+	
 }
 
+let GearList = [Helm, Armor, Legs, Sword, Shield, Spear, Dagger, Axe];
+
+let BaseStats = ['str', 'dex', 'tof', 'stm', 'tec', 'agl'];
 
 //base class for all enemy drops, includes attach and unattach functions and dom handling for drop attachments to gear
 class Drop{
@@ -960,6 +1053,8 @@ class Drop{
 		this.id = 'drop'+Object.values(u.bag.drops).length.toString();
 		this.attached = undefined;
 	}
+	
+	//dom controls gear and adds stat or removes stat from gear  
 	attach(){
 	if(u.bag.inspecting){	
 		let div = document.getElementById(this.id);
@@ -993,6 +1088,9 @@ class Drop{
 	
 }
 
+
+
+//BAT DROPS
 class Batfang extends Drop{
 	constructor(){
 		super();
@@ -1001,7 +1099,6 @@ class Batfang extends Drop{
 	}
 	
 }
-
 
 class Batclaw extends Drop{
 	constructor(){
@@ -1023,16 +1120,31 @@ class Batwing extends Drop{
 
 
 let u = new User();
-u.bag.add(new Helm(1), true);
+
+/*u.bag.add(new Helm(1), true);
 u.bag.add(new Armor(1), true);
 u.bag.add(new Legs(1), true);
 u.bag.add(new Sword(1), true);
 u.bag.add(new Spear(1), true);
 u.bag.add(new Axe(1), true);
 u.bag.add(new Dagger(1), true);
-u.bag.add(new Shield(1), true);
+u.bag.add(new Shield(1), true); */
 
-u.bag.add(new Batfang());
-u.bag.add(new Batclaw());
+u.bag.add(new Sword(2), true);
+u.bag.add(new Sword(2), true);
+u.bag.add(new Sword(2), true);
+u.bag.add(new Sword(2), true);
+u.bag.add(new Sword(2), true);
+u.bag.add(new Sword(2), true);
+u.bag.add(new Sword(2), true);
+u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(3), true);
+u.bag.add(new Ring(3), true);
+
 
 u.mainmenu();
