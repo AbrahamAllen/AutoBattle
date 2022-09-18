@@ -51,12 +51,15 @@ class User{
 	//main menu loads tower start buttons, bag menu, stats menu
 	mainmenu(){
 		domclear(screen);
+		screen.style.backgroundImage = "url('css/assets/mainmenu.png')";
 		
 		let main = new menu(screen, 'towerMenu', '', false);
 		let baseLvl = this.hero.lvl+5;
 		while(baseLvl > 0 && baseLvl > this.hero.lvl-5){
-			let tower = new menu(main.dom, baseLvl+' '+getRandom(Object.keys(enemies)), 'tower', function(){u.startTower(this.id)}, false);
+			let enemy = getRandom(Object.keys(enemies));
+			let tower = new menu(main.dom, baseLvl+' '+enemy, 'tower', function(){u.startTower(this.id)}, false);
 			tower.dom.innerHTML += baseLvl;
+			tower.dom.style.backgroundImage = "url('css/assets/"+enemy+"tower.png')"
 			tower.build();
 			
 			baseLvl--;
@@ -105,6 +108,7 @@ class User{
 	battleMenu(){
 		
 		let main = new menu(screen, 'battleMenu');
+		screen.style.backgroundImage = "url('css/assets/fightBg.png')";
 		
 		this.chest = true;
 		new menu(main.dom, 'fast', 'attackOption', function(){u.hero.changeStance(this.id)});
@@ -118,6 +122,7 @@ class User{
 	floorMenu(){
 		domclear(screen);
 		let main = new menu(screen, 'floorMenu');
+		let display = new menu(screen, 'floorEnd');
 		if(this.chest){new menu(screen, 'chest', '', function(){u.openChest()})};
 		
 		new menu(main.dom, 'openBag', '', function(){u.bag.open()});
@@ -378,23 +383,24 @@ class Hero extends Character{
 	//opens stat menu, used to reset menu on stat updates
 	statMenu(){
 		domclear(screen);
+		screen.style.backgroundImage = "url('css/assets/statsbg.png')";
 		this.setStats();
 		let stats = Object.keys(this);
 		let statVal = Object.values(this);
 		
 		for(let i = 0; i < 7; i++){
 			let baseStat = new menu(screen, stats[i], 'stat', function(){u.hero.usePoint(this.id)}, false);
-			baseStat.dom.innerHTML = stats[i]+'<br>'+statVal[i];
+			baseStat.dom.innerHTML = '<br>'+stats[i]+'<br>'+statVal[i];
 			baseStat.build();
 		}
 
 		for(let i = 7; i < 18; i++){
 			let comStat = new menu(screen, stats[i], 'stat', false, false);
-			comStat.dom.innerHTML = stats[i] + '<br>' + statVal[i];
+			comStat.dom.innerHTML = '<br>'+stats[i] + '<br>' + statVal[i];
 			comStat.build();
 		}
 		document.getElementById('maxhp').remove();
-		document.getElementById('hp').innerHTML = this.hp+'/'+this.maxhp+'<br> health';
+		document.getElementById('hp').innerHTML = '<br>'+this.hp+'/'+this.maxhp+'<br> health';
 		
 		new menu(screen, 'back', 'back', function(){if(u.activeTower){u.floorMenu()}else{u.mainmenu()}});
 	}
@@ -636,7 +642,7 @@ class Vampirebat extends Enemy{
 		this.img = "url('css/assets/vampireBat.png')";
 		
 		
-		this.str = 5*lvl;
+		this.str = 6*lvl;
 		this.dex = 4*lvl;
 		this.tof = 3*lvl;
 		this.agl = 5*lvl;
@@ -650,9 +656,166 @@ class Vampirebat extends Enemy{
 	
 }
 
+
+
+
+
+class Pygmyface extends Enemy{
+	constructor(lvl){
+		super(lvl);
+		this.rank = 1;
+		this.img = "url('css/assets/pygmyface.png')";
+		
+		this.str = 2*lvl;
+		this.dex = 2*lvl;
+		this.tof = 2*lvl;
+		this.agl = 2*lvl;
+		this.stm = 2*lvl;
+		
+		this.atkSpd = 5000-(this.agl*40);
+		
+		this.setStats();
+		this.hp = this.maxhp;
+		
+		this.loot = Drop;
+	}
+}
+	
+class Lineface extends Enemy{
+	constructor(lvl){
+		super(lvl);
+		this.rank = 1;
+		this.img = "url('css/assets/lineface.png')";
+		
+		this.str = 4*lvl;
+		this.dex = 2*lvl;
+		this.tof = 3*lvl;
+		this.agl = 2*lvl;
+		this.stm = 3*lvl;
+		
+		this.atkSpd = 5000-(this.agl*40);
+		
+		this.setStats();
+		this.hp = this.maxhp;
+		
+		this.loot = Drop;
+	}
+}
+
+class Tongueface extends Enemy{
+	constructor(lvl){
+		super(lvl);
+		this.rank = 1;
+		this.img = "url('css/assets/tongueface.png')";
+		
+		this.str = 3*lvl;
+		this.dex = 5*lvl;
+		this.tof = 3*lvl;
+		this.agl = 5*lvl;
+		this.stm = 3*lvl;
+		
+		this.atkSpd = 5000-(this.agl*40);
+		
+		this.setStats();
+		this.hp = this.maxhp;
+		
+		this.loot = Drop;
+	}
+}
+
+class Redeyesface extends Enemy{
+	constructor(lvl){
+		super(lvl);
+		this.rank = 1;
+		this.img = "url('css/assets/redeyesface.png')";
+		
+		this.str = 5*lvl;
+		this.dex = 5*lvl;
+		this.tof = 5*lvl;
+		this.agl = 3*lvl;
+		this.stm = 5*lvl;
+		
+		this.atkSpd = 5000-(this.agl*40);
+		
+		this.setStats();
+		this.hp = this.maxhp;
+		
+		this.loot = Drop;
+	}
+}
+
+class Fangface extends Enemy{
+	constructor(lvl){
+		super(lvl);
+		this.rank = 1;
+		this.img = "url('css/assets/fangface.png')";
+		
+		this.str = 8*lvl;
+		this.dex = 3*lvl;
+		this.tof = 3*lvl;
+		this.agl = 5*lvl;
+		this.stm = 5*lvl;
+		
+		this.atkSpd = 5000-(this.agl*40);
+		
+		this.setStats();
+		this.hp = this.maxhp;
+		
+		this.loot = Drop;
+	}
+}
+
+class Madface extends Enemy{
+	constructor(lvl){
+		super(lvl);
+		this.rank = 1;
+		this.img = "url('css/assets/madface.png')";
+		
+		this.str = lvl;
+		this.dex = 5*lvl;
+		this.tof = 5*lvl;
+		this.agl = 5*lvl;
+		this.stm = 5*lvl;
+		this.tec = lvl;
+		
+		this.atkSpd = 5000-(this.agl*40);
+		
+		this.setStats();
+		this.hp = this.maxhp;
+		
+		this.loot = Drop;
+	}
+}
+
+class Darkface extends Enemy{
+	constructor(lvl){
+		super(lvl);
+		this.rank = 1;
+		this.img = "url('css/assets/darkface.png')";
+		
+		this.str = 6*lvl;
+		this.dex = 6*lvl;
+		this.tof = 4*lvl;
+		this.agl = 5*lvl;
+		this.stm = 4*lvl;
+		
+		this.atkSpd = 5000-(this.agl*40);
+		
+		this.setStats();
+		this.hp = this.maxhp;
+		
+		this.loot = Drop;
+	}
+}
+
+	
+	
+	
+	
 //enemy dictionary used in tower class
 let enemies = new Object();
 enemies['bat'] = [Pygmybat,Greybat,Brownbat,Blackbat,Largebat,Sonicbat,Vampirebat];
+enemies['face'] = [Pygmyface, Lineface, Tongueface, Redeyesface, Fangface, Madface, Darkface];
 
 
 //attached to user, controlls all loot picked up, facilitates dom interactions of all loot,
