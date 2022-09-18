@@ -1,10 +1,15 @@
+body{
+		
+	background-image: url('assets/mainbg.png');
+}
+
 #screen{
 	width: 400px;
 	height: 700px;
 	padding: 0px;
 	margin: 0px;
 	
-	border-style: solid;
+	background-image: url('assets/mainmenu.png');
 }
 
 
@@ -13,11 +18,18 @@
 #towerMenu{
 	width: 400px;
 	height: 280px;
-	border-style: solid;
+	 
+	background-image: url('assets/towerBg.png');
 	
 	overflow-x: scroll;
 	overflow-y: hidden;
 	white-space: nowrap;	
+}
+
+#floorEnd{
+	width: 400px;
+	height: 400px;
+	background-image: url('assets/floormenubg.png');
 }
 
 #floorMenu{
@@ -39,6 +51,7 @@
 	top: 425px;
 
 	margin: 0px;
+	background-image: url('assets/menuBg.png');
 }
 
 #charMenu{
@@ -60,6 +73,7 @@
 #inspectMenu{
 	width: 400px;
 	height: 400px;
+	background-image: url('assets/inspectMenu.png');
 }
 
 #attachmentMenu{
@@ -74,7 +88,7 @@
 	width: 400px;
 	height: 300px;
 	
-	background-color: brown;
+	background-image: url('assets/bagbg.png');
 	overflow-y: scroll;
 	
 }
@@ -87,7 +101,6 @@
 .tower{
 	width: 100px;
 	height: 250px;
-	background-image: url('assets/tower.png');
 	margin: 10px;
 	display: inline-block;
 	clear: top;
@@ -101,7 +114,7 @@
 	
 	position: absolute;
 	top: 350px;
-	left: 50px;
+	left: 70px;
 	
 }
 
@@ -148,11 +161,10 @@
 	float: left;
 	margin: 15px;
 	
-	width: 100px;
-	height: 50px;
+	width: 75px;
+	height: 75px;
 	
 	text-align: center;
-	line-height: 25px;
 	
 	background-image: url('assets/stat.png');
 }
@@ -223,7 +235,7 @@
 	height: 100px;
 	top: 50px;
 	left: 50px;
-	border-style: solid;
+	 
 }
 
 #gearStats{
@@ -232,15 +244,16 @@
 	height: 200px;
 	top: 50px;
 	left: 200px;
-	border-style: solid;
+	 
 }
 
 .attatchmentSlot{
 	margin: 10px;
 	width: 50px;
 	height: 50px;
-	border-style: solid;
+	 
 	float: left;
+	background-image: url('assets/slot.png');
 }
 
 
@@ -260,7 +273,6 @@
 	width: 100px;
 	height: 50px;
 	background-image: url('assets/swap.png');
-	background-color: green;	
 }
 
 #forge{
@@ -269,13 +281,16 @@
 	left: 50px;
 	height: 50px;
 	width: 100px;
-	background-color: blue;
+	background-image: url('assets/forge.png');
 }
 
 #chest{
 	width: 200px;
-	height: 200px;
-	background-color: brown;
+	height: 100px;
+	position: absolute;
+	top: 300px;
+	left: 200px;
+	background-image: url('assets/chest.png');
 }
 
 #back{
@@ -339,7 +354,7 @@
 	height: 140px;
 	
 	float: left; 
-	border-style: solid;
+	 
 	margin: 0px;
 	opacity: 70%;
 }
