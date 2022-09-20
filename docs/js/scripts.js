@@ -38,12 +38,35 @@ class menu{
 	}
 }
 
+
+class popup{
+	constructor(x, y, txt, r = false, w = 200, h = 200, parent = screen){
+		this.dom = document.createElement('div');
+		this.dom.style.top = y+'px';
+		this.dom.style.left = x+'px';
+		this.dom.style.width = w+'px';
+		this.dom.style.height = h+'px';
+		this.dom.innerHTML = txt;
+		this.dom.className = 'popup';
+		this.dom.onclick = function(){this.remove()};
+		if(r){let div = this.dom; setTimeout(function(){div.remove()}, 3000)}
+		parent.appendChild(this.dom);
+	}
+	
+
+	
+}
+
+
+
 //user class manages player moving through tower, and holds the hero and bag 
 class User{
 	constructor(){
 		this.hero = new Hero();
 		this.bag = new Bag();
 		
+		this.towerIndex = 10;
+		this.clearedTowers = [];
 		this.activeTower;
 		this.activeFloor;
 		this.floorTrack;
@@ -56,7 +79,17 @@ class User{
 		screen.style.backgroundImage = "url('css/assets/mainmenu.png')";
 		
 		let main = new menu(screen, 'towerMenu', '', false);
-		let baseLvl = this.hero.lvl+5;
+		let i = 1;
+		while(i <= this.towerIndex){
+			let enemy = getRandom(Object.keys(enemies));
+			let tower = new menu(main.dom, i+' '+enemy, 'tower', function(){u.startTower(this.id)}, false);
+			tower.dom.innerHTML += i;
+			tower.dom.style.backgroundImage = "url('css/assets/"+enemy+"tower.png')"
+			tower.build();
+			i++
+		}
+		
+/* 		let baseLvl = this.hero.lvl+5;
 		while(baseLvl > 0 && baseLvl > this.hero.lvl-5){
 			let enemy = getRandom(Object.keys(enemies));
 			let tower = new menu(main.dom, baseLvl+' '+enemy, 'tower', function(){u.startTower(this.id)}, false);
@@ -65,7 +98,7 @@ class User{
 			tower.build();
 			
 			baseLvl--;
-		}
+		} */
 		
 		new menu(screen, 'openBagM', '', function(){u.bag.open()});
 		new menu(screen, 'openStatsM', '', function(){u.hero.statMenu()}); 
@@ -89,7 +122,7 @@ class User{
 	newFloor(){
 		domclear(screen);
 		this.floorTrack++;
-		if(this.floorTrack > 10){this.endTower()}
+		if(this.floorTrack > 10){this.clearTower()}
 		else{
 			this.activeFloor = this.activeTower.floors[this.floorTrack]; 
 			this.battleMenu();
@@ -135,8 +168,19 @@ class User{
 	}
 	
 	//finishes tower, resets tower movement variables
-	endTower(){
+ 	endTower(){
 		domclear(screen);
+		this.activeTower = false;
+		this.activeFloor = false;
+		this.floorTrack = 1;
+		
+		this.mainmenu();
+	} 
+	
+	clearTower(){
+		domclear(screen);
+		this.towerIndex += (3-(this.towerIndex-this.activeTower.lvl));
+		console.log(this.towerIndex);
 		this.activeTower = false;
 		this.activeFloor = false;
 		this.floorTrack = 1;
@@ -214,7 +258,6 @@ class Tower{
 		if(spot > 2){pool+=2};
 		
 		let n = Math.floor(Math.random()*pool)+low;
-		console.log(n);
 		let enemy = this.enemyPool[n];
 		if(spot >= 4){floor++};
 		return new enemy(Math.floor(this.lvl/2)+floor);
@@ -501,6 +544,21 @@ class Hero extends Character{
 		this.hp+=amt;
 		if(this.hp > this.maxhp){this.hp = this.maxhp};
 		this.healthbar.update(this.hp);
+	}
+	
+	destroy(){
+		u.endTower();
+		
+		this.str-=2;
+		this.dex-=1;
+		this.tof-=1;
+		this.stm-=2;
+		this.tec-=1;
+		
+		this.lvl-=1;
+		if(this.lvl < 1){this.lvl = 1};
+		
+		new popup(75, 50, 'YOU DIED');
 	}
 	
 }
@@ -1018,7 +1076,6 @@ class Bag{
 		//makes rings
 		for(let slot of Object.keys(u.hero.rings)){
 			let div = new menu(document.getElementById('ringSlots'), 'Ring'+slot, 'ringslot');
-			console.log(u.hero.rings[slot]);
 			if(u.hero.rings[slot]){
 				div.dom.appendChild(document.getElementById(u.hero.rings[slot].id))
 				document.getElementById(u.hero.rings[slot].id).oncontextmenu = function(){event.preventDefault(); u.bag.gear[this.id].unequipt(slot)};	
@@ -1523,3 +1580,4 @@ u.bag.add(new GearList[Math.round(Math.random()*7)](2, 2), true);
 
 
 u.mainmenu();
+new popup(0, 300, 'hello', true);
