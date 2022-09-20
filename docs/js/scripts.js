@@ -65,7 +65,7 @@ class User{
 		this.hero = new Hero();
 		this.bag = new Bag();
 		
-		this.towerIndex = 10;
+		this.towerIndex = 3;
 		this.clearedTowers = [];
 		this.activeTower;
 		this.activeFloor;
@@ -81,13 +81,14 @@ class User{
 		let main = new menu(screen, 'towerMenu', '', false);
 		let i = 1;
 		while(i <= this.towerIndex){
+		if(!this.clearedTowers.includes(i)){
 			let enemy = getRandom(Object.keys(enemies));
 			let tower = new menu(main.dom, i+' '+enemy, 'tower', function(){u.startTower(this.id)}, false);
 			tower.dom.innerHTML += i;
 			tower.dom.style.backgroundImage = "url('css/assets/"+enemy+"tower.png')"
 			tower.build();
-			i++
-		}
+			
+		}i++};
 		
 /* 		let baseLvl = this.hero.lvl+5;
 		while(baseLvl > 0 && baseLvl > this.hero.lvl-5){
@@ -147,10 +148,11 @@ class User{
 		screen.style.backgroundImage = "url('css/assets/fightBg.png')";
 		
 		this.chest = true;
+		new menu(main.dom, 'normal', 'attackOption selectedAttack', function(){u.hero.changeStance(this.id)});
 		new menu(main.dom, 'fast', 'attackOption', function(){u.hero.changeStance(this.id)});
 		new menu(main.dom, 'agressive', 'attackOption', function(){u.hero.changeStance(this.id)});
 		new menu(main.dom, 'defensive', 'attackOption', function(){u.hero.changeStance(this.id)});
-		new menu(main.dom, 'normal', 'attackOption', function(){u.hero.changeStance(this.id)});
+		
 		this.hero.spawn();
 	}
 	
@@ -174,12 +176,14 @@ class User{
 		this.activeFloor = false;
 		this.floorTrack = 1;
 		
+		this.hero.heal(this.hero.maxhp/2);
 		this.mainmenu();
 	} 
 	
 	clearTower(){
 		domclear(screen);
 		this.towerIndex += (3-(this.towerIndex-this.activeTower.lvl));
+		this.clearedTowers.push(this.activeTower.lvl);
 		console.log(this.towerIndex);
 		this.activeTower = false;
 		this.activeFloor = false;
@@ -187,6 +191,7 @@ class User{
 
 		alert('tower clear');
 		
+		this.hero.heal(this.hero.maxhp);
 		this.mainmenu();
 	}
 	
@@ -195,15 +200,18 @@ class User{
 		this.activeFloor.shift();
 		this.hero.gainExp(enemy);
 		this.hero.heal(Math.floor(this.hero.stm/5));
-		if(this.hero.luck+enemy.luck > Math.random()*100){u.bag.add(new enemy.loot(getRandom(BaseStats),enemy.rank))}
-		else{};
+		if(this.hero.luck+enemy.luck > Math.random()*100){
+			new popup(19, 10, 'dropped loot', true, 100, 100)
+			if(enemy.loot.name != 'Ring'){u.bag.add(new enemy.loot(getRandom(BaseStats),enemy.rank))}
+			else{u.bag.add(new enemy.loot(enemy.lvl, Math.ceil(Math.random()*3)))}
+		}else{};
 		setTimeout(function(){u.continueFloor()}, 1200);
 	}
 	
 	//adds gear to user bag
 	openChest(chest){
 		this.chest = false;
-		this.bag.add(new chest.loot(chest.lvl, chest.rank), true);
+		this.bag.add(new chest.loot(chest.lvl, chest.rank));
 		document.getElementById('chest').remove();
 	}
 	
@@ -267,21 +275,17 @@ class Tower{
 	makeChests(){
 		for(let key of Object.keys(this.floors)){
 			let floor = this.floors[key];
-			
 			let rarity = 0;
 			rarity+=floor.length;
 			for(let enemy of floor){rarity+=enemy.rank};
 			rarity=Math.floor(rarity/5);
 			if(rarity > 3){rarity = 3};
 			if(rarity < 1){rarity = 1};
-			
-			
 			let n = this.lvl+1;
 			if(key > 5){n+=2};
-			
-			this.chests[key] = {loot: GearList[Math.round(Math.random()*7)], rank: rarity, lvl: n}
-			
+			this.chests[key] = {loot: GearList[Math.round(Math.random()*7)], rank: rarity, lvl: n}	
 		}
+		this.chests[10] = {loot: GearList[Math.round(Math.random()*7)], rank: 3, lvl: this.lvl+5};
 	}
 	
 	createChest(i){
@@ -299,12 +303,14 @@ class Character{
 	}
 	//attacks a target, then checks if target is still alive and if so attacks the target again
 	attack(target){
+		clearTimeout(this.fight);
 		let speed = this.atkSpd;
 		if(speed < 1000){speed = 1000};
 		
 		
 		let unit = this;
 		this.fight = setTimeout(function(){
+			console.log(unit.stance);
 			if(unit.hp > 0 && target.hp > 0){unit.attackanim(); target.damage(unit)};
 			if(target.hp > 0){unit.attack(target)};
 		}, speed);
@@ -324,9 +330,16 @@ class Character{
 	//sets atk def and max hp stats 
 	setStats(){
 		this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));
+		if(this.stance){
+				switch(this.stance){			 
+					case 'fast': this.atkSpd = 2500-(this.agl*50); this.atk = Math.ceil(this.gatk+this.lvl);break;
+					case 'agressive': this.atkSpd = 6000-(this.agl*30);this.atk = Math.ceil((this.gatk*2)+(this.str)+(this.dex));break;
+					case 'defensive': this.atkSpd = 3000-(this.agl*10);this.atk = Math.ceil((this.str)+(this.dex/2));break;
+					case 'normal': this.atkSpd = 3000-(this.agl*20);this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));break;
+				}
+		}
 		this.def = Math.ceil((this.gdef)+(this.tof)+(this.dex/2));
-		this.maxhp = Math.ceil((this.tof/2)+(this.stm/2)+(this.str/2)+(this.lvl*2));
-		
+		this.maxhp = Math.ceil((this.tof)+(this.stm)+(this.str)+(this.lvl*2));
 	}
 	
 	
@@ -448,17 +461,29 @@ class Hero extends Character{
 	
 	//sets stance to the selected option and changes atkSpd and damage values depending on current stance
 	changeStance(stance){
-		if(this.stance != 'normal'){document.getElementById(this.stance).className = 'attackOption'};
-		if(this.stance == stance){this.stance = 'normal'}else{this.stance = stance};
-		switch(this.stance){			 
-			case 'fast': this.atkSpd = 3000-(this.agl*50); this.atk = Math.ceil(this.gatk+this.lvl);break;
+		this.stance = stance;
+		switch(stance){			 
+			case 'fast': this.atkSpd = 2500-(this.agl*50); this.atk = Math.ceil(this.gatk+this.lvl);break;
 			case 'agressive': this.atkSpd = 6000-(this.agl*30);this.atk = Math.ceil((this.gatk*2)+(this.str)+(this.dex));break;
-			case 'defensive': this.atkSpd = 4000-(this.agl*10);this.atk = Math.ceil((this.str)+(this.dex/2));break;
-			case 'normal': this.atkSpd = 4000-(this.agl*20);this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));break;
+			case 'defensive': this.atkSpd = 3000-(this.agl*10);this.atk = Math.ceil((this.str)+(this.dex/2));break;
+			case 'normal': this.atkSpd = 3000-(this.agl*20);this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));break;
 		}
-		clearInterval(this.fight);
-		this.attack(u.activeFloor[0]);
-		document.getElementById(this.stance).classList.add('selectedAttack');
+		try{
+			document.getElementsByClassName('selectedAttack')[0].className = 'attackOption';
+			this.attack(u.activeFloor[0]);
+			document.getElementById(this.stance).classList.add('selectedAttack');
+		}catch{
+			this.statMenu();
+		}
+	}
+	
+	//changes stance on stats screen
+	swapStance(){
+		let stances = ['normal', 'fast', 'agressive', 'defensive'];
+		let i = stances.indexOf(this.stance)+1;
+		if(i > 3){i = 0};
+		this.changeStance(stances[i]);
+		
 	}
 	
 	
@@ -470,12 +495,18 @@ class Hero extends Character{
 		let stats = Object.keys(this);
 		let statVal = Object.values(this);
 		
-		for(let i = 0; i < 7; i++){
+		for(let i = 0; i < 6; i++){
 			let baseStat = new menu(screen, stats[i], 'stat', function(){u.hero.usePoint(this.id)}, false);
 			baseStat.dom.innerHTML = '<br>'+stats[i]+'<br>'+statVal[i];
 			baseStat.build();
 		}
-
+		
+		new menu(screen, 'statExplainer');
+		let luck = new menu(screen, stats[6], 'stat', function(){u.hero.usePoint(this.id)}, false);
+		luck.dom.innerHTML = '<br>'+stats[6]+'<br>'+statVal[6];
+		luck.build();
+		
+		
 		for(let i = 7; i < 18; i++){
 			let comStat = new menu(screen, stats[i], 'stat', false, false);
 			comStat.dom.innerHTML = '<br>'+stats[i] + '<br>' + statVal[i];
@@ -485,6 +516,8 @@ class Hero extends Character{
 		document.getElementById('hp').innerHTML = '<br>'+this.hp+'/'+this.maxhp+'<br> health';
 		
 		new menu(screen, 'back', 'back', function(){if(u.activeTower){u.floorMenu()}else{u.mainmenu()}});
+		
+		document.getElementById('stance').onclick = function(){u.hero.swapStance()};
 	}
 	
 	
@@ -508,6 +541,7 @@ class Hero extends Character{
 			case 'tec' : this.tec += amt; break;
 			case 'gatk' : this.gatk += amt; break;
 			case 'gdef' : this.gdef += amt; break;
+			case 'luck' : this.luck += amt; break;
 		}
 	}
 	
@@ -522,6 +556,7 @@ class Hero extends Character{
 			case 'tec' : this.tec -= amt; break;
 			case 'gatk' : this.gatk -= amt; break;
 			case 'gdef' : this.gdef -= amt; break;
+			case 'luck' : this.luck -= amt; break;
 		}
 	}
 	
@@ -547,8 +582,6 @@ class Hero extends Character{
 	}
 	
 	destroy(){
-		u.endTower();
-		
 		this.str-=2;
 		this.dex-=1;
 		this.tof-=1;
@@ -557,8 +590,10 @@ class Hero extends Character{
 		
 		this.lvl-=1;
 		if(this.lvl < 1){this.lvl = 1};
-		
-		new popup(75, 50, 'YOU DIED');
+		setTimeout(function(){	
+			u.endTower();
+			new popup(75, 50, 'YOU DIED');
+		}, 1000);
 	}
 	
 }
@@ -573,8 +608,6 @@ class Enemy extends Character{
 		this.gatk = 0;
 		this.gdef = 0;
 		this.tec = 0;
-		
-		
 	}
 	
 	//builds enemy dom and healtbat
@@ -767,7 +800,7 @@ class Knightbat extends Enemy{
 		this.tof = 10*lvl;
 		this.agl = 5*lvl;
 		this.stm = 7*lvl;
-		this.loot = Drop;
+		this.loot = Ring;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -788,7 +821,7 @@ class Gargoyle extends Enemy{
 		this.tof = 10*lvl;
 		this.agl = 2*lvl;
 		this.stm = 8*lvl;
-		this.loot = Drop;
+		this.loot = Ring;
 		this.setStats();
 		this.hp = this.maxhp;
 		
@@ -985,7 +1018,7 @@ class Jaws extends Enemy{
 		this.setStats();
 		this.hp = this.maxhp;
 		
-		this.loot = Drop;
+		this.loot = Ring;
 	}
 }
 
@@ -1006,7 +1039,7 @@ class Lasereye extends Enemy{
 		this.setStats();
 		this.hp = this.maxhp;
 		
-		this.loot = Drop;
+		this.loot = Ring;
 	}
 }
 
@@ -1050,8 +1083,8 @@ class Bag{
 	}
 	
 	//adds gear and drop 
-	add(item, gear = false){
-		if(gear){this.gear[item.id] = item}
+	add(item){
+		if(item.gear){this.gear[item.id] = item}
 		else{this.drops[item.id] = item}
 	}
 	
@@ -1149,7 +1182,7 @@ class Bag{
 		try{
 			if(this.inspecting){
 				if(this.inspecting.id == item.id){return false};		
-				if(this.inspecting.lvl == item.lvl && this.inspecting.rank == item.rank && this.inspecting.stage == item.stage && this.inspecting.stat == item.stat){
+				if(this.inspecting.lvl == item.lvl && this.inspecting.rank == item.rank && this.inspecting.stage == item.stage && this.inspecting.stat == item.stat && this.inspecting.constructor.name == item.constructor.name){
 				
 					document.getElementById('inspectGear').appendChild(document.getElementById(item.id));
 					document.getElementById(item.id).style.marginTop = '50px';
@@ -1209,6 +1242,7 @@ class Gear{
 		this.lvl = lvl;
 		this.rank = rank;
 		this.stage = 1;
+		this.gear = true;
 		this.id = Object.keys(u.bag.gear).length.toString();
 		this.stats = {'str': 0, 'dex': 0, 'tof': 0, 'agl': 0, 'stm': 0, 'tec': 0};
 		this.attachments = [];
@@ -1254,6 +1288,7 @@ class Gear{
 		for(let attach of this.attachments){
 			let attachment = new menu(document.getElementById(this.id+attach.attached), attach.id, 'drop', false, true);
 			attachment.dom.innerHTML = attach.stat + ' : ' + attach.bonus;
+			attachment.dom.style.backgroundImage = attach.img;
 			attachment.dom.oncontextmenu = function(){event.preventDefault(); u.bag.drops[this.id].detach()}
 		};
 		this.showStats();
@@ -1402,9 +1437,9 @@ class Shield extends Gear{
 		
 		this.type = 'Offhand';
 		
-		this.gdef = 0;
-		this.gatk = this.lvl*this.rank;
-		this.slots = 0;
+		this.gdef = this.lvl*this.rank;
+		this.gatk = 0;
+		this.slots = 1;
 		
 		this.img = 'url("css/assets/shield.png")';
 	}
@@ -1572,9 +1607,8 @@ u.bag.add(new Axe(1), true);
 u.bag.add(new Dagger(1), true);
 u.bag.add(new Shield(1), true); */
 
-u.bag.add(new Sword(3, 1), true);
-u.bag.add(new Ring(Math.ceil(Math.random()*4), 2), true);
-u.bag.add(new GearList[Math.round(Math.random()*7)](2, 2), true);
+u.bag.add(new Sword(3, 1));
+u.bag.add(new Armor(Math.ceil(Math.random()*4), 2));
 
 
 
