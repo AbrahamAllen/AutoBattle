@@ -1,0 +1,29 @@
+
+main menu
+-new path
+-new buttons
+-new towers
+
+equipt
+-char menu
+-swap button
+
+forge
+-inspect 
+-stats
+-attacthments
+-attachment slots
+:sort bag
+
+stats menu
+-background
+:resort/resize
+
+popupIMG
+
+combat
+-leave tower
+-next floor
+
+
+ALERT SYSTEM 
