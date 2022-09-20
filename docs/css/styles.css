@@ -17,6 +17,16 @@ body{
 	background-image: url('assets/mainmenu.png');
 }
 
+.popup{
+	border-style: solid;
+	border-radius: 25%;
+	position: absolute;
+	padding: 10px;
+	text-align: center;
+	color: blue;
+	font-size: 30px;
+}
+
 
 /* menu base styles */
 
@@ -166,12 +176,20 @@ body{
 	float: left;
 	margin: 15px;
 	
-	width: 75px;
+	width: 100px;
 	height: 75px;
 	
 	text-align: center;
 	
 	background-image: url('assets/stat.png');
+}
+
+#statExplainer{
+	margin-left: 15px;
+	float: left;
+	width: 360px;
+	height: 100px;
+	background-image: url('assets/statExplainer.png');
 }
 
 .gear{
@@ -379,5 +397,9 @@ body{
 
 #defensive{
 	background-image: url('assets/defensive.png');
+}
+
+#normal{
+	background-image: url('assets/normal.png');
 }
 
