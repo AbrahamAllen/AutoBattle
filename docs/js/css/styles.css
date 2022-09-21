@@ -1,0 +1,410 @@
+body{
+		
+/* 	background-image: url('assets/mainbg.png'); */
+	background-color: grey;
+}
+
+#screen{
+	width: 400px;
+	height: 700px;
+	padding: 0px;
+	margin: 0px;
+	
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	
+	background-image: url('assets/mainmenu.png');
+}
+
+.popup{
+	border-style: solid;
+	border-radius: 25%;
+	position: absolute;
+	padding: 10px;
+	text-align: center;
+	color: blue;
+	font-size: 30px;
+}
+
+
+/* menu base styles */
+
+#towerMenu{
+	width: 400px;
+	height: 280px;
+	margin-top: 80px;
+	
+	overflow-x: scroll;
+	overflow-y: hidden;
+	white-space: nowrap;	
+}
+
+#floorEnd{
+	width: 400px;
+	height: 400px;
+	background-image: url('assets/floormenubg.png');
+}
+
+#floorMenu{
+	position: absolute;
+	top: 400px;
+	width: 400px;
+	height: 300px;
+	margin: 0px;
+	
+	background-image: url('assets/menuBg.png');
+	
+}
+
+#battleMenu{
+	position: absolute;
+	width: 400px;
+	height: 300px;
+	
+	top: 425px;
+
+	margin: 0px;
+	background-image: url('assets/menuBg.png');
+}
+
+#charMenu{
+	
+	width: 400px;
+	height: 400px;
+	
+	background-image: url('assets/charmenu.png');
+}
+
+#ringSlots{
+	width: 75px;
+	height: 400px;
+	position: absolute;
+	left: 310px;
+	top: 0px;
+}
+
+#inspectMenu{
+	width: 400px;
+	height: 400px;
+		background-image: url('assets/inspectMenu.png');
+}
+
+#attachmentMenu{
+	position: absolute;
+	width: 300px;
+	height: 100px;
+	top: 290px;
+	left: 50px;
+
+}
+
+#bag{
+	width: 400px;
+	height: 300px;
+	
+	overflow-y: scroll;
+	
+}
+
+#userbg{
+	background-image: url('assets/userbg.png');
+}
+
+
+
+
+/* menu option styles */
+
+.tower{
+	width: 150px;
+	height: 200px;
+	margin: 10px;
+	display: inline-block;
+	clear: top;
+	font-size: 50px;
+}
+
+#openBagM{
+	width: 100px;
+	height: 100px;
+	background-size: contain;
+	background-image: url('assets/openBag.png');
+	
+	position: absolute;
+	top: 400px;
+	left: 20px;
+	
+}
+
+
+#openStatsM{
+	width: 100px;
+	height: 100px;
+	background-size: contain;
+	background-image: url('assets/openStats.png');
+	
+	position: absolute;
+	top: 550px;
+	left: 20px;
+}
+
+#openBag{
+	width: 150px;
+	height: 150px;
+	float: left;
+	background-image: url('assets/openBag.png');
+	
+}
+
+#openStats{
+	width: 150px;
+	height: 150px;
+	float: left;
+	background-image: url('assets/openStats.png');
+}
+
+#leaveTower{
+	float: left;
+	width: 150px;
+	height: 150px;
+	background-image: url('assets/leaveTower.png');
+}
+
+.ringslot{
+	width: 50px;
+	height: 50px;
+	margin: 15px;
+}
+
+.stat{
+	float: left;
+	margin: 15px;
+	
+	width: 100px;
+	height: 75px;
+	
+	text-align: center;
+	
+	background-image: url('assets/stat.png');
+}
+
+#statExplainer{
+	margin-left: 15px;
+	float: left;
+	width: 360px;
+	height: 100px;
+	background-image: url('assets/statExplainer.png');
+}
+
+.gear{
+	width: 50px;
+	height: 50px;
+	float: left;
+	
+	background-size: cover;
+	
+	color: white;
+
+	text-align: center;
+}
+
+.drop{
+	width: 50px;
+	height: 50px;
+	float: left;
+	color: white;
+}
+
+#Helm{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 35px;
+	left: 180px;
+}
+
+#Armor{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 155px;
+	left: 207px;
+}
+
+#Legs{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 260px;
+	left: 180px;
+}
+
+#Onhand{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 160px;
+	left: 25px;
+}
+
+#Offhand{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	top: 245px;
+	left: 25px;	
+}
+
+#inspectGear{
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	top: 50px;
+	left: 50px;
+	 
+}
+
+#gearStats{
+	position: absolute;
+	width: 100px;
+	height: 200px;
+	top: 25px;
+	left: 200px;
+	 
+}
+
+.attatchmentSlot{
+	margin: 10px;
+	width: 50px;
+	height: 50px;
+	 
+	float: left;
+	background-image: url('assets/slot.png');
+}
+
+
+#nextFloor{
+	position: absolute;
+	top: 650px;
+	left: 300px;
+	width: 100px;
+	height: 50px;
+	background-image: url('assets/nextFloor.png');
+}
+
+#swap{
+	position: absolute;
+	top: 650px;
+	left: 20px;
+	width: 100px;
+	height: 50px;
+	background-image: url('assets/swap.png');
+}
+
+#forge{
+	position: absolute;
+	top: 250px;
+	left: 50px;
+	height: 100px;
+	width: 100px;
+	background-image: url('assets/forge.png');
+}
+
+#chest{
+	width: 200px;
+	height: 100px;
+	position: absolute;
+	top: 300px;
+	left: 200px;
+	background-image: url('assets/chest.png');
+}
+
+#back{
+	position: absolute;
+	top: 650px;
+	left: 300px;
+	width: 100px;
+	height: 50px;
+	background-image: url('assets/back.png');
+}
+
+
+
+/* combat styles */
+
+
+.hero{
+	position: absolute;
+	left: 40px;
+	top: 240px;
+	
+	width: 100px;
+	height: 200px;
+	background-image: url('assets/hero.png');
+}
+
+.enemy{
+	position: absolute;
+	left: 220px;
+	top: 40px;
+	
+	width: 150px;
+	height: 150px;
+}
+
+#herohealthbar{
+	font-size: 10px;
+	width: 100px;
+	height: 10px;
+	border-radius: 4px;
+	background-color: red;
+}
+
+#enemyhealthbar{
+	font-size: 10px;
+	width: 150px;
+	height: 10px;
+	border-radius: 4px;
+	background-color: red;
+}
+
+.hptrack{
+	float: left;
+	background-color: green;
+	height: 10px;
+	border-radius: 4px;
+}
+
+
+
+.attackOption{
+	width: 190px;
+	height: 140px;
+	
+	float: left; 
+	 
+	margin: 0px;
+	opacity: 70%;
+}
+
+.selectedAttack{
+	opacity: 100%;
+}
+
+#fast{
+	background-image: url('assets/fastAttack.png');
+}
+
+#agressive{
+	background-image: url('assets/agressive.png');
+}
+
+#defensive{
+	background-image: url('assets/defensive.png');
+}
+
+#normal{
+	background-image: url('assets/normal.png');
+}
+

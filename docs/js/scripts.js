@@ -331,7 +331,7 @@ class Character{
 	setStats(){
 		this.atk = Math.ceil((this.gatk)+(this.str)+(this.dex/2));
 		if(this.stance){
-				switch(this.stance){			 
+				switch(this.stance){	 
 					case 'fast': this.atkSpd = 2500-(this.agl*50); this.atk = Math.ceil(this.gatk+this.lvl);break;
 					case 'agressive': this.atkSpd = 6000-(this.agl*30);this.atk = Math.ceil((this.gatk*2)+(this.str)+(this.dex));break;
 					case 'defensive': this.atkSpd = 3000-(this.agl*10);this.atk = Math.ceil((this.str)+(this.dex/2));break;
@@ -1091,6 +1091,7 @@ class Bag{
 	//opens full bag 
 	open(){
 		domclear(screen);
+		screen.style.backgroundImage = "url('css/assets/userbg.png')";
 		new menu(screen, 'charMenu');
 		new menu(screen, 'ringSlots');
 		
@@ -1598,20 +1599,21 @@ class Emojieye extends Drop{
 
 let u = new User();
 
-/*u.bag.add(new Helm(1), true);
-u.bag.add(new Armor(1), true);
-u.bag.add(new Legs(1), true);
-u.bag.add(new Sword(1), true);
-u.bag.add(new Spear(1), true);
-u.bag.add(new Axe(1), true);
-u.bag.add(new Dagger(1), true);
-u.bag.add(new Shield(1), true); */
+u.bag.add(new Helm(1, 2));
+u.bag.add(new Armor(1, 2));
+u.bag.add(new Legs(1, 2));
+u.bag.add(new Sword(1, 2));
+u.bag.add(new Spear(1, 2));
+u.bag.add(new Axe(1, 2));
+u.bag.add(new Dagger(1, 2));
+u.bag.add(new Shield(1, 2)); 
+u.bag.add(new Ring(1, 2));
 
-u.bag.add(new Sword(3, 1));
+u.bag.add(new Sword(1, 2));
 u.bag.add(new Armor(Math.ceil(Math.random()*4), 2));
 
 
 
 
 u.mainmenu();
-new popup(0, 300, 'hello', true);
+new popup(160, 400, 'hello', true);
