@@ -286,7 +286,7 @@ class Tower{
 			let sum = 0;
 			for(let enemy of floor){sum+=enemy.lvl};
 			let m = Math.floor(sum/floor.length);
-			if(key > 5){n+=1};
+			if(key > 5){m+=1};
 			this.chests[key] = {loot: GearList[Math.round(Math.random()*7)], rank: rarity, lvl: m}	
 		}
 		this.chests[10] = {loot: GearList[Math.round(Math.random()*7)], rank: 3, lvl: this.lvl+5};
