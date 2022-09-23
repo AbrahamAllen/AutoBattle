@@ -71,6 +71,7 @@ class User{
 		this.activeFloor;
 		this.floorTrack;
 		this.chest = false;
+		this.gold = 10;
 	}
 	
 	//main menu loads tower start buttons, bag menu, stats menu
@@ -79,6 +80,7 @@ class User{
 		screen.style.backgroundImage = "url('css/assets/mainmenu.png')";
 		
 		let main = new menu(screen, 'towerMenu', '', false);
+		new menu(screen, 'shop', '', function(){shop.open()});
 		let i = 1;
 		while(i <= this.towerIndex){
 		if(!this.clearedTowers.includes(i)){
@@ -281,9 +283,11 @@ class Tower{
 			rarity=Math.floor(rarity/5);
 			if(rarity > 3){rarity = 3};
 			if(rarity < 1){rarity = 1};
-			let n = this.lvl+1;
-			if(key > 5){n+=2};
-			this.chests[key] = {loot: GearList[Math.round(Math.random()*7)], rank: rarity, lvl: n}	
+			let sum = 0;
+			for(let enemy of floor){sum+=enemy.lvl};
+			let m = Math.floor(sum/floor.length);
+			if(key > 5){n+=1};
+			this.chests[key] = {loot: GearList[Math.round(Math.random()*7)], rank: rarity, lvl: m}	
 		}
 		this.chests[10] = {loot: GearList[Math.round(Math.random()*7)], rank: 3, lvl: this.lvl+5};
 	}
@@ -562,13 +566,15 @@ class Hero extends Character{
 	
 	//gets enemy and adds exp based on lvl and rank, levels up and adds stat points
 	gainExp(enemy){
-		this.exp+=(enemy.lvl*enemy.rank);
-		if(this.exp > this.lvl*15){
+		this.exp+=(enemy.lvl*enemy.rank+this.tec);
+		if(this.exp >= this.lvl*15){
 			this.lvl++; 
 			this.exp = 0; 
 			this.statPoints+=5; 
-			this.statUp('str', 1); 
-			this.statUp('stm', 1); 
+			this.str+=1;
+			this.dex+=1;
+			this.stm+=1;
+			this.tof+=1;
 			this.setStats();
 			this.healthbar.newmax(this.maxhp);
 		}
@@ -583,10 +589,9 @@ class Hero extends Character{
 	
 	destroy(){
 		this.str-=2;
-		this.dex-=1;
-		this.tof-=1;
+		this.dex-=2;
+		this.tof-=2;
 		this.stm-=2;
-		this.tec-=1;
 		
 		this.lvl-=1;
 		if(this.lvl < 1){this.lvl = 1};
@@ -1073,7 +1078,7 @@ enemies['bat'] = [Pygmybat,Greybat,Brownbat,Blackbat,Largebat,Sonicbat,Vampireba
 enemies['face'] = [Pygmyface, Lineface, Tongueface, Redeyesface, Fangface, Madface, Darkface, Jaws, Lasereye, Monsterface];
 
 
-//attached to user, controlls all loot picked up, facilitates dom interactions of all loot,
+//attached to user, controlls all loot picked up, facilitates dom interactions of all loot, tied by div ID to object ID
 class Bag{
 	constructor(){
 		this.gear = {};
@@ -1133,6 +1138,7 @@ class Bag{
 		});
 		new menu(main.dom, 'gearStats');
 		new menu(main.dom, 'attachmentMenu');
+		new menu(main.dom,  'scrap', '', function(){u.bag.scrap(this.id)});
 		new menu(screen, 'bag');
 		new menu(screen, 'swap', 'swap', function(){u.bag.open()});
 		new menu(screen, 'back', 'back', function(){if(u.activeTower){u.floorMenu()}else{u.mainmenu()}});
@@ -1142,8 +1148,9 @@ class Bag{
 	//generates gear for equipt menu
 	populateGear(){
 		domclear(document.getElementById('bag'));
-		this.inspecting = false;
+		this.inspecting = undefined;
 		for(let gear of Object.values(this.gear)){
+			if(!gear){continue};
 			let item = new menu(document.getElementById('bag'), gear.id, 'gear', function(){gear.equipt()}, false);
 			item.dom.style.backgroundImage = gear.img;
 			item.dom.innerHTML = gear.lvl+':'+gear.rank;
@@ -1155,6 +1162,7 @@ class Bag{
 	populateGearInspect(){
 		domclear(document.getElementById('bag'));
 		for(let gear of Object.values(this.gear)){
+			if(!gear){continue};
 			if(this.inspecting && this.inspecting.id == gear.id){continue};
 			let item = new menu(document.getElementById('bag'), gear.id, 'gear', function(){gear.inspect()}, false);
 			item.dom.style.backgroundImage = gear.img;
@@ -1166,13 +1174,26 @@ class Bag{
 	
 	//generates drops
 	populateDrops(){
-		for(let drop of Object.values(this.drops)){
-		if(drop.attached == undefined){
+		for(let drop of Object.values(this.drops)){	
+		if(drop && drop.attached == undefined){
+			
 			let item = new menu(document.getElementById('bag'), drop.id, 'drop', function(){drop.attach()}, false);
 			item.dom.style.backgroundImage = drop.img;
 			item.dom.innerHTML = drop.stat+' : '+drop.bonus;
 			item.build();
 		}}
+	}
+	
+	populateGearSell(){
+		domclear(document.getElementById('bag'));
+		for(let gear of Object.values(this.gear)){
+			if(!gear){continue};
+			let item = new menu(document.getElementById('bag'), gear.id, 'gear', function(){shop.sell(gear)}, false);
+			item.dom.style.backgroundImage = gear.img;
+			item.dom.innerHTML = gear.lvl+':'+gear.rank;
+			item.build();
+		}
+		new menu(screen, 'back', 'back', function(){if(u.activeTower){u.floorMenu()}else{u.mainmenu()}});
 	}
 	
 	
@@ -1209,20 +1230,22 @@ class Bag{
 	upgradeItem(){
 		if(this.inspecting && this.material){
 			this.inspecting.clear(); this.material.clear();
-			delete this.gear[this.inspecting.id];
+			this.gear[this.inspecting.id] = undefined;
 			this.material.upgrade();
-			this.forge();
+			document.getElementById('bag').appendChild(document.getElementById(this.material.id));
 			this.inspecting = false;
-			this.material.inspect();
 			this.material = false;
+			this.forge();
 		}
 	}
 	
 	upgradeDrop(){
 		if(this.inspecting && this.material){
-			this.add(new Drop(this.inspecting.stat, this.inspecting.rank, this.inspecting.stage+1));
+			let drop = new Drop(this.inspecting.stat, this.inspecting.rank, this.inspecting.stage+1);
 			this.inspecting.destroy(); this.inspecting = undefined;
 			this.material.destroy(); this.material = undefined;
+			this.add(drop);
+			console.log(drop);
 			this.forge();
 		}
 	}
@@ -1234,6 +1257,10 @@ class Bag{
 		new menu(document.getElementById('inspectMenu'), 'attachmentMenu');
 		document.getElementById('forge').remove();
 		
+	}
+	
+	scrap(id){
+		console.log(this.gear[id]);
 	}
 }
 
@@ -1568,7 +1595,7 @@ class Drop{
 	
 	destroy(){
 		document.getElementById(this.id).remove();
-		delete u.bag.drops[this.id];
+		u.bag.drops[this.id] = undefined;
 	}
 	
 }
@@ -1594,11 +1621,80 @@ class Emojieye extends Drop{
 
 
 
+class Shop{
+	constructor(){
+		this.restock();
+	}
+	open(){
+		domclear(screen);
+		new menu(screen, 'shopmenu');
+		this.showStock();
+		new menu(screen, 'bag');
+		new menu(screen, 'gold');
+		document.getElementById('gold').innerHTML = u.gold;
+		u.bag.populateGearSell();
+		
+	}
+	
+	showStock(){
+		let main = new menu(screen, 'itemmenu');		
+
+		for(let gear of this.stock){
+			let item = new menu(main.dom, gear.id, 'gear', function(){shop.buy(gear)}, false);
+			item.dom.style.backgroundImage = gear.img;
+			item.dom.innerHTML = gear.lvl+':'+gear.rank;
+			item.build();
+		}
+	}
+	
+	restock(){
+		this.stock = [];
+		while(this.stock.length < 12){
+			this.stock.push(this.craft());
+		}			
+	}
+	
+	craft(){
+		let lvl = Math.ceil(Math.random()*u.towerIndex+2);
+		let rank = Math.ceil(Math.random()*3);
+		let gear = new GearList[Math.round(Math.random()*7)](lvl, rank);
+		gear.id = 'stock'+this.stock.length;
+		return gear; 
+	}
+	
+	sell(item){
+		document.getElementById(item.id).remove();
+		u.bag.gear[item.id] = undefined;
+		if(item.equipted){item.unequipt()};
+		item.clear();
+		let value = item.lvl*item.rank*item.stage;
+		u.gold+=value;
+		this.open();
+	}
+	
+	buy(item){
+		let value = item.lvl*item.rank*item.stage*2;
+		if(u.gold >= value){	
+			let i = parseInt(item.id.split('k')[1]);
+			document.getElementById(item.id).remove();
+			this.stock.splice(i, 1);
+			item.id = Object.keys(u.bag.gear).length.toString();
+			u.bag.add(item);
+			u.gold-=value;
+			}
+		this.open();
+	}
+	
+}
 
 
 
 let u = new User();
+let shop = new Shop();
 
+
+
+/* 
 u.bag.add(new Helm(1, 2));
 u.bag.add(new Armor(1, 2));
 u.bag.add(new Legs(1, 2));
@@ -1607,10 +1703,22 @@ u.bag.add(new Spear(1, 2));
 u.bag.add(new Axe(1, 2));
 u.bag.add(new Dagger(1, 2));
 u.bag.add(new Shield(1, 2)); 
-u.bag.add(new Ring(1, 2));
+u.bag.add(new Ring(1, 2)); */
 
 u.bag.add(new Sword(1, 2));
+u.bag.add(new Sword(1, 2));
+u.bag.add(new Sword(1, 2));
+u.bag.add(new Sword(1, 2));
+u.bag.add(new Sword(1, 2));
+u.bag.add(new Sword(1, 2));
+u.bag.add(new Sword(1, 2));
 u.bag.add(new Armor(Math.ceil(Math.random()*4), 2));
+
+u.bag.add(new Drop('dex', 2));
+u.bag.add(new Drop('dex', 2));
+
+u.bag.add(new Drop('str', 2));
+u.bag.add(new Drop('str', 2));
 
 
 
