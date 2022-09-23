@@ -99,6 +99,20 @@ body{
 
 }
 
+#shopmenu{
+	width: 400px;
+	height: 400px;
+	background-image: url('assets/shopItems.png');
+}
+
+#itemmenu{
+	width: 200px;
+	height: 200px;
+	position: absolute;
+	top: 150px;
+	left: 100px;
+}
+
 #bag{
 	width: 400px;
 	height: 300px;
@@ -121,8 +135,27 @@ body{
 	height: 200px;
 	margin: 10px;
 	display: inline-block;
-	clear: top;
 	font-size: 50px;
+}
+
+#shop{
+	width: 200px;
+	height: 150px;
+	margin: 10px;
+	display: inline-block;
+	font-size: 50px;
+	background-image: url('assets/shop.png');
+	position: absolute;
+	top: 400px;
+	left: 20px;
+}
+
+#gold{
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	left: 175px;
+	top: 350px;
 }
 
 #openBagM{
@@ -132,8 +165,8 @@ body{
 	background-image: url('assets/openBag.png');
 	
 	position: absolute;
-	top: 400px;
-	left: 20px;
+	top: 580px;
+	left: 280px;
 	
 }
 
@@ -145,8 +178,8 @@ body{
 	background-image: url('assets/openStats.png');
 	
 	position: absolute;
-	top: 550px;
-	left: 20px;
+	top: 460px;
+	left: 280px;
 }
 
 #openBag{
@@ -329,6 +362,9 @@ body{
 	background-image: url('assets/back.png');
 }
 
+.stockItem{
+	
+}
 
 
 /* combat styles */
