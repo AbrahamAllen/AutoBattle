@@ -1,0 +1,30 @@
+
+
+
+equipt
+-swap button
+
+forge
+-attacthments
+-attachment slots
+:sort bag
+
+popupIMG
+
+combat
+-leave tower
+-next floor
+
+
+ALERT SYSTEM 
+:tutorial alerts
+:lvl up
+:gear gained
+
+
+BUGS
+forging removing gear items
+backpack add replacing gear
+adding more than 2 gear to forge
+.fix dequipt with sell
+
